@@ -33,12 +33,6 @@
 
 		window.editor = editor;
 
-		monaco.Promise.join([xhr('helloworld.js')]).then(function(r) {
-			var text = r[0].responseText;
-			console.log(r);
-			editor.setModel(monaco.editor.createModel(text, 'javascript'));
-		});
-
 		// var model = monaco.editor.createModel([
 		// 		'function x() {',
 		// 		'\tconsole.log("Hello world!");',
