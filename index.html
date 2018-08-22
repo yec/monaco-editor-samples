@@ -79,7 +79,7 @@
 		var filename = document.getElementById('filename').value;
 		monaco.Promise.join([xhr(filename)]).then(function(r) {
 			var text = r[0].responseText;
-			editor.setModel(monaco.editor.createModel(text, 'javascript'));
+			editor.setModel(monaco.editor.createModel(text, filename.split('.').pop()));
 		});
 	}
 </script>
