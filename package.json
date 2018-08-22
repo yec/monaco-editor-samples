@@ -4,12 +4,12 @@
   "description": "Samples for using the Monaco Editor",
   "main": "index.js",
   "scripts": {
-    "simpleserver": "node_modules/.bin/http-server -c-1 ./ -p 8888"
+    "simpleserver": "node_modules/.bin/http-server --path=edit -c-1 ./ -p 8888"
   },
   "author": "Microsoft Corporation",
   "license": "MIT",
   "dependencies": {
-    "http-server": "^0.11.1",
+    "http-server": "git+https://github.com/yec/http-server.git",
     "monaco-editor": "0.x.x"
   }
 }
