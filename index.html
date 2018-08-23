@@ -1,119 +1,113 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<style>
 		#filename {
 			width: 700px;
 		}
 	</style>
 </head>
+
 <body>
 
-<input type="text" id="filename" value="" />
-<button id="save" onclick="savefile();" type="submit">save</button>
-<button id="open" onclick="openfile();" type="submit">open</button>
-<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
+	<input type="text" id="filename" value="" />
+	<button id="save" onclick="savefile();" type="submit">save</button>
+	<button id="open" onclick="openfile();" type="submit">open</button>
+	<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
 
-<!-- OR ANY OTHER AMD LOADER HERE INSTEAD OF loader.js -->
-<script src="node_modules/monaco-editor/min/vs/loader.js"></script>
-<script>
-	require.config({ paths: { 'vs': 'node_modules/monaco-editor/min/vs' }});
+	<!-- OR ANY OTHER AMD LOADER HERE INSTEAD OF loader.js -->
+	<script src="node_modules/monaco-editor/min/vs/loader.js"></script>
+	<script>
+		require.config({ paths: { 'vs': 'node_modules/monaco-editor/min/vs' } });
 
-	require(['vs/editor/editor.main'], function() {
-		var editor = monaco.editor.create(document.getElementById('container'), {
-			// value: [
-			// 	'function x() {',
-			// 	'\tconsole.log("Hello world!");',
-			// 	'}'
-			// ].join('\n'),
-			// language: 'javascript'
+		require(['vs/editor/editor.main'], function () {
+			var editor = monaco.editor.create(document.getElementById('container'), {
+				// value: [
+				// 	'function x() {',
+				// 	'\tconsole.log("Hello world!");',
+				// 	'}'
+				// ].join('\n'),
+				// language: 'javascript'
+			});
+
+			window.editor = editor;
 		});
+	</script>
+	<script>
+		function savefile() {
+			var filename = document.getElementById('filename').value;
+			monaco.Promise.join([xhr(filename, editor.getValue())]).then(function (r) {
+				var text = r[0].responseText;
+				console.log(text);
+			});
+		}
 
-		window.editor = editor;
+		function openfile() {
+			var filename = document.getElementById('filename').value;
+			monaco.Promise.join([xhr(filename)]).then(function (r) {
+				var text = r[0].responseText,
+					type = 'text';
 
-		// var model = monaco.editor.createModel([
-		// 		'function x() {',
-		// 		'\tconsole.log("Hello world!");',
-		// 		'}'
-		// 	].join('\n'),
-		// 	'javascript'
-		// );
-		// var editor1 = monaco.editor.create(document.getElementById('container1'), {
-		// 	model: model
-		// });
-		// var editor2 = monaco.editor.create(document.getElementById('container2'), {
-		// 	model: model
-		// });
-	});
-
-// 			var diffEditor = monaco.editor.createDiffEditor(document.getElementById('container'));
-
-// monaco.Promise.join([xhr('original.txt'), xhr('modified.txt')]).then(function(r) {
-// 	var originalTxt = r[0].responseText;
-// 	var modifiedTxt = r[1].responseText;
-
-// 	diffEditor.setModel({
-// 		original: monaco.editor.createModel(originalTxt, 'javascript'),
-// 		modified: monaco.editor.createModel(modifiedTxt, 'javascript'),
-// 	})
-// });
-</script>
-<script>
-	function savefile() {
-		var filename = document.getElementById('filename').value;
-		monaco.Promise.join([xhr(filename, editor.getValue())]).then(function(r) {
-			var text = r[0].responseText;
-			console.log(text);
-		});
-	}
-
-	function openfile() {
-		var filename = document.getElementById('filename').value;
-		monaco.Promise.join([xhr(filename)]).then(function(r) {
-			var text = r[0].responseText;
-			editor.setModel(monaco.editor.createModel(text, filename.split('.').pop()));
-		});
-	}
-</script>
-<script>
-	function xhr(url, data = '') {
-		var req = null;
-		return new monaco.Promise(function(c,e,p) {
-			req = new XMLHttpRequest();
-			req.onreadystatechange = function () {
-				if (req._canceled) { return; }
-
-				if (req.readyState === 4) {
-					if ((req.status >= 200 && req.status < 300) || req.status === 1223) {
-						c(req);
-					} else {
-						e(req);
-					}
-					req.onreadystatechange = function () { };
-				} else {
-					p(req);
+				switch (filename.split('.').pop()) {
+					case 'js':
+						type = 'javascript';
+						break;
+					case 'install':
+					case 'module':
+						type = 'php';
+						break;
+					case 'feature':
+						type = 'gherkin';
+						break;
+					default:
+						type = filename.split('.').pop();
+						break;
 				}
-			};
+				editor.setModel(monaco.editor.createModel(text, type));
+			});
+		}
+	</script>
+	<script>
+		function xhr(url, data = '') {
+			var req = null;
+			return new monaco.Promise(function (c, e, p) {
+				req = new XMLHttpRequest();
+				req.onreadystatechange = function () {
+					if (req._canceled) { return; }
 
-			if (data == '') {
-				req.open("GET", url, true );
-				req.responseType = "";
-				req.send(null);
-			} else {
-				req.open("POST", url, true );
-				req.responseType = "";
-				req.send(data);
-			}
+					if (req.readyState === 4) {
+						if ((req.status >= 200 && req.status < 300) || req.status === 1223) {
+							c(req);
+						} else {
+							e(req);
+						}
+						req.onreadystatechange = function () { };
+					} else {
+						p(req);
+					}
+				};
 
-		}, function () {
-			req._canceled = true;
-			req.abort();
-		});
-	}
-</script>
-<script>
-</script>
+				if (data == '') {
+					req.open("GET", url, true);
+					req.responseType = "";
+					req.send(null);
+				} else {
+					req.open("POST", url, true);
+					req.responseType = "";
+					req.send(data);
+				}
+
+			}, function () {
+				req._canceled = true;
+				req.abort();
+			});
+		}
+	</script>
+	<script>
+	</script>
 </body>
+
 </html>
