@@ -4,7 +4,7 @@
   "description": "Samples for using the Monaco Editor",
   "main": "index.js",
   "scripts": {
-    "simpleserver": "node_modules/.bin/http-server --path=edit -c-1 ./ -p 8888"
+    "simpleserver": "node_modules/.bin/http-server -c-1 ./ -p 8888"
   },
   "author": "Microsoft Corporation",
   "license": "MIT",

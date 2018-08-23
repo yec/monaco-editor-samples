@@ -55,6 +55,7 @@
 					case 'js':
 						type = 'javascript';
 						break;
+					case 'inc':
 					case 'install':
 					case 'module':
 						type = 'php';
@@ -95,7 +96,7 @@
 					req.responseType = "";
 					req.send(null);
 				} else {
-					req.open("POST", url, true);
+					req.open("PUT", url, true);
 					req.responseType = "";
 					req.send(data);
 				}
